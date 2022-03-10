@@ -1,11 +1,11 @@
 import React from 'react'
 import { useDrag, useDrop } from 'react-dnd'
 
-function Picture({id, url}) {
+function Picture({id, url, validTarget}) {
 
     const [{ isDrop, canDrop }, drop] = useDrop(() => ({
         accept: "image",
-        drop: () => console.log("You're dropping shit on this"),
+        drop: (item) => console.log(`You're dropping ${item.id} on ${id}, valid? ${!!validTarget}`),
         collect: (monitor) => ({
             isDrop: !!monitor.isOver(),
             canDrop: monitor.canDrop(),
@@ -15,33 +15,46 @@ function Picture({id, url}) {
 
     const [{isDragging, canDrag}, drag] = useDrag(() => ({
         type: "image",
-        item: { id: id },
+        item: { id: id},
         // collection function defines different states and props accessible 
         collect: (monitor) => ({
             // double bang just returns the truthy-ness
-            isDragging: !!monitor.isDragging(),
+            isDragging: id === monitor?.getItem()?.id,
             canDrag: monitor.canDrag(),
         })
     }))
 
     return(
         <div style={{position: 'relative', width: 50, height: 50}}>
-            <img
-                src={url} 
-                style={{border: isDragging ? "5px solid pink" : "0px", opacity: canDrop ? .5 : 1}}
-            />
             <div
+                ref={drop}
+                style={{
+                    width: '100%',
+                    height: '100%',
+                    position: 'absolute',
+                    left: 0,
+                    top: 0,
+                    zIndex: !isDragging && canDrop ? 2: 'auto',
+                    border: (canDrop && validTarget) ? "5px solid blue" : "0px",
+                }} 
+            />
+            <img
+                ref={drag}
+                src={url} 
+                style={{
+                    border: isDragging ? "5px solid pink" : "0px",
+                    position: 'absolute',
+                    left: 0,
+                    top: 0,
+                }}
+            />
+            {/* <div
                 ref={drag}
                 style={{width: '100%', height: '100%', position: 'absolute', left: 0, top: 0,
-                pointerEvents: canDrag ? 'auto' : 'none'
+                pointerEvents: !isDragging && canDrop ? 'auto' : 'auto'
                 }} 
-            >
-                <div
-                    ref={drop}
-                    style={{width: '100%', height: '100%', position: 'absolute', left: 0, top: 0,
-                    }} 
-                />
-            </div>
+            /> */}
+            
         </div>
     )
 }

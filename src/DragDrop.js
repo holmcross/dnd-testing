@@ -15,6 +15,7 @@ const PictureList = [
     {
         id: 3,
         url: "https://www.rpgmakercentral.com/uploads/profile/photo-15053.png",
+        validTarget: true,
     },
 ]
 
@@ -38,12 +39,12 @@ function DragDrop() {
       <>
         <div className="Pictures">
           {PictureList.map((picture) => {
-            return <Picture url={picture.url} id={picture.id} />;
+            return <Picture url={picture.url} id={picture.id} key={picture.id} validTarget={picture.validTarget}/>;
           })}
         </div>
         <div className="Board" ref={drop}>
           {board.map((picture) => {
-            return <Picture url={picture.url} id={picture.id} />;
+            return <Picture url={picture.url} id={picture.id}/>;
           })}
         </div>
       </>
